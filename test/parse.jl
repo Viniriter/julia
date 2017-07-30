@@ -1276,3 +1276,13 @@ end
 @test parse("(::A)") == Expr(Symbol("::"), :A)
 @test_throws ParseError parse("(::, 1)")
 @test_throws ParseError parse("(1, ::)")
+
+# issue #23014
+@test parse("Base.:==") == parse("Base.:(==)")
+try
+    parse(":=")
+catch err
+    @test err isa ParseError
+    # Make sure it isn't an "invalid identifier name" error
+    @test err.msg == "unexpected \"=\""
+end
